@@ -1,80 +1,18 @@
 console.log('Sorting Algorithms');
 
-
 let unsortedArray = [8,6,4,2,0,9,7,5,3,1];
+let expect = [0,1,2,3,4,5,6,7,8,9];
 
-
-// ** Merge Sort **
-// 
-// split arr recursively in half until you have only single element arrays
-// compare the first two values, form a new, sorted 2-element array
-// repeat with the rest of the array
-// compare the first two 2-element arrays, iterate through them simultaneously,
-// taking the next highest value, merging into one 4-element array
-// continue until arr is completely re-merged together
-// how does control flow decide when to split, when to merge?
-// does it always take and return a 1D array?
 function mergeSort(arr) {
   if (arr.length <= 1) {
     return arr;
   } else {
-    let arr1 = mergeSort(arr.slice(0, arr.length / 2)); // 1,2
-    let arr2 = mergeSort(arr.slice(arr.length / 2));    // 3,4
+    let arr1 = mergeSort(arr.slice(0, arr.length / 2));
+    let arr2 = mergeSort(arr.slice(arr.length / 2));
     return merge(arr1, arr2);
   }
-  // if (arr.length == 2) {
-  //   let arr1 = arr.slice(0, arr.length / 2); // 1
-  //   let arr2 = arr.slice(arr.length / 2);    // 2
-  //   return merge(arr1, arr2);
-  // }
-  // if (arr.length == 3) {
-  //   let arr1 = arr.slice(0, arr.length / 2); // 1
-  //   let arr2 = mergeSort(arr.slice(arr.length / 2));    // 3,2
-  //   return merge(arr1, arr2);
-  // }
-  // if (arr.length == 4) {
-  //   let arr1 = mergeSort(arr.slice(0, arr.length / 2)); // 1,2
-  //   let arr2 = mergeSort(arr.slice(arr.length / 2));    // 3,4
-  //   return merge(arr1, arr2);
-  // }
-  // if (arr.length == 5) {
-  //   let arr1 = arr.slice(0, arr.length / 2); // 1,2
-  //   let arr2 = arr.slice(arr.length / 2);    // 3,4,5
-  //   return merge(arr1, arr2);
-  // }
-  // if (arr.length == 6) {
-
-  // }
 }
-
-
-
-
-// function mergeSort(arr) {
-//   let mergeSize = 2;
-//   let merged;
-//   let arr1;
-//   let arr2;
-//   counter = 0;
-//   while (mergeSize <= arr.length && counter < 100) {
-//     merged = [];
-//     for (let i = 0; i * mergeSize <= arr.length; i += 1) {
-//       arr1 = arr.slice(i * mergeSize, (i + 1) * mergeSize / 2);
-//       arr2 = arr.slice((i + 1) * mergeSize / 2, (i + 1) * mergeSize);
-//       merged = merged.concat(merge(arr1, arr2));
-//     }
-//     mergeSize *= 2;
-//     arr = merged.slice();
-//     console.log('arr', arr);
-//     counter += 1;
-//   }
-//   return arr;
-// }
-
 function merge(arr1, arr2) {
-  // let arr1 = arr.slice(0, arr.length / 2);
-  // let arr2 = arr.slice(arr.length / 2);
-  console.log(`Merging ${arr1} and ${arr2}`);
   let i = 0;
   let j = 0;
   let output = []
@@ -94,10 +32,99 @@ function merge(arr1, arr2) {
   return output;
 }
 
-arrAssert(mergeSort(unsortedArray), `mergeSort, ${unsortedArray.length} elements unsorted`);
+// ** Array Version **
+function insertionSort(arr) {
+  let sorted = [];
+  for (let i = 0; i < arr.length; i += 1) {
+    if (i == 0) { // first element from src automatically goes to sorted
+      sorted.push(arr[i]);
+    } else {
+      for (let j = sorted.length - 1; j >= 0; j -= 1) {
+        if (arr[i] >= sorted[j]) {
+          sorted = sorted.slice(0,j+1).concat(arr[i], sorted.slice(j+1));
+          break;
+        } else if (j == 0) {
+          sorted = [arr[i]].concat(sorted);
+        }
+      }
+    }
+  }
+  return sorted;
+}
 
-// Insertion Sort
+// LinkedList version
+function insertionSortLL(arr) {
+  let sorted = new LinkedList();
+  let current;
+  for (let i = 0; i < arr.length; i += 1) {
+    const nodeToInsert = new Node(arr[i]);
+    if (i == 0) { // first element from src automatically goes to sorted
+      sorted.push(nodeToInsert);
+    } else {
+      current = sorted.tail;
+      while (current != null) {
+        if (arr[i] >= current.value) {
+          sorted.insertAfter(current, nodeToInsert);
+          break;
+        } else if (current.prev == null) {
+          sorted.unshift(nodeToInsert)
+          break;
+        }
+        current = current.prev;
+      }
+    }
+  }
+  return sorted.toArray();
+}
+// Linked List for insertionSort
+function Node(val) {
+  this.prev = null;
+  this.next = null;
+  this.value = val;
+};
 
+function LinkedList() {
+  this.head = null;
+  this.tail = null;
+  this.length = 0;
+  this.push = function(n) {
+    if (this.length == 0) {
+      this.head = n;
+      this.tail = n;
+    } else {
+      n.prev = this.tail;
+      this.tail.next = n;
+      this.tail = n;
+    }
+    this.length += 1;
+  };
+  this.insertAfter = function(nodeInList, nodeToInsert) {
+    if (nodeInList.next == null) {
+      this.push(nodeToInsert);
+    } else {
+      const nextNode = nodeInList.next;
+      nodeToInsert.next = nodeInList.next;
+      nodeToInsert.prev = nodeInList;
+      nextNode.prev = nodeToInsert;
+      nodeInList.next = nodeToInsert;
+    }
+  }
+  this.unshift = function(n) {
+    n.next = this.head;
+    this.head.prev = n;
+    this.head = n;
+    this.length += 1;
+  };
+  this.toArray = function () {
+    let output = [];
+    let current = this.head;
+    while (current != null) {
+      output.push(current.value);
+      current = current.next;
+    }
+    return output;
+  };
+};
 
 // Bubble Sort
 function bubbleSort(arr) {
@@ -121,7 +148,6 @@ function bubbleSort(arr) {
   return arr;
 }
 
-arrAssert(bubbleSort(unsortedArray), 'bubbleSort, 10 elements unsorted');
 
 
 // Quicksort
@@ -133,6 +159,10 @@ arrAssert(bubbleSort(unsortedArray), 'bubbleSort, 10 elements unsorted');
 // Counting Sort
 
 
+// ** Tests **
+// arrAssert(expect, mergeSort(unsortedArray), `mergeSort, ${unsortedArray.length} elements unsorted`);
+// arrAssert(expect, insertionSort(unsortedArray), `insertionSort, ${unsortedArray.length} elements unsorted`);
+// arrAssert(expect, bubbleSort(unsortedArray), `bubbleSort, ${unsortedArray.length} elements unsorted`);
 
 // Assert
 function arrayEquals(arr1, arr2) {
@@ -147,19 +177,36 @@ function arrayEquals(arr1, arr2) {
   return true;
 }
 
-function arrAssert(result, test = '') {
-  if (arrIsSorted(result)) {
-    console.log('PASS:', test)
+function arrAssert(expect, result, test = '') {
+  const RED = "\u001b[31m";
+  const GREEN = "\u001b[32m";
+  const RESET = "\u001b[0m";
+  if (arrayEquals(expect, result)) {
+    console.log(`${GREEN}PASS:${RESET} ${test}`)
   } else {
-    console.error(`FAILED: Got ${JSON.stringify(result)}`);
+    console.error(`${RED}FAILED:${RESET} Got ${JSON.stringify(result)}`);
   }
 }
 
-function arrIsSorted(arr) {
-  for (let i = 0; i < arr.length - 1; i += 1) {
-    if (arr[i] > arr[i+1]) {
-      return false;
-    }
-  }
-  return true;
+// Performance Tests
+
+function timerDecorator(fn) {
+  return function(arg) {
+    let startTime = Date.now();
+    fn(arg);
+    let finishTime = Date.now();
+    return finishTime - startTime + ' ms';
+  };
 }
+
+const arraySize = 2e4;
+console.log(`Making ${arraySize.toLocaleString()} element array of random ints`);
+let largeArray = [];
+for (let i = 0; i < arraySize; i++) {
+  largeArray.push(Math.floor(Math.random() * arraySize));
+}
+
+console.log(`- mergeSort\t\t${timerDecorator(mergeSort)(largeArray)}`);
+console.log(`- insertionSort\t\t${timerDecorator(insertionSort)(largeArray)}`);
+console.log(`- insertionSortLL\t${timerDecorator(insertionSortLL)(largeArray)}`);
+console.log(`- bubbleSort\t\t${timerDecorator(bubbleSort)(largeArray)}`);
