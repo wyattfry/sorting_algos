@@ -3,6 +3,7 @@ console.log('Sorting Algorithms');
 let unsortedArray = [8,6,4,2,0,9,7,5,3,1];
 let expect = [0,1,2,3,4,5,6,7,8,9];
 
+// ** Merge Sort **
 function mergeSort(arr) {
   if (arr.length <= 1) {
     return arr;
@@ -32,7 +33,7 @@ function merge(arr1, arr2) {
   return output;
 }
 
-// ** Array Version **
+// ** Insertion Sort - Array Version **
 function insertionSort(arr) {
   let sorted = [];
   for (let i = 0; i < arr.length; i += 1) {
@@ -52,7 +53,7 @@ function insertionSort(arr) {
   return sorted;
 }
 
-// LinkedList version
+// ** Insertion Sort - LinkedList version **
 function insertionSortLL(arr) {
   let sorted = new LinkedList();
   let current;
@@ -76,7 +77,7 @@ function insertionSortLL(arr) {
   }
   return sorted.toArray();
 }
-// Linked List for insertionSort
+
 function Node(val) {
   this.prev = null;
   this.next = null;
@@ -126,7 +127,7 @@ function LinkedList() {
   };
 };
 
-// Bubble Sort
+// ** Bubble Sort **
 function bubbleSort(arr) {
   if (arr.length < 2) {
     return arr;
@@ -148,21 +149,75 @@ function bubbleSort(arr) {
   return arr;
 }
 
+// ** Quicksort **
 
 
-// Quicksort
+// ** Heapsort **
+function heapSort(arr) {
+  const heap = new Heap();
+  const sorted = [];
+  for (let i = 0; i < arr.length; i += 1) {
+    heap.push(arr[i]);
+  }
 
+  for (let i = arr.length - 1; i >= 0; i -= 1) {
+    // swap first and last element
+    sorted[i] = heap.toArray()[0];
+  }
+}
 
-// Heapsort
+function Heap() {
+  this.heap = [];
+  this.push = function(val) {
+    this.heap.push(val);
+    let childIdx = this.heap.length - 1;
+    let parentIdx = Number.parseInt((childIdx - 1) / 2);
+    let temp;
+    while (this.heap.length > 1 && this.heap[childIdx] > this.heap[parentIdx]) {
+      temp = this.heap[childIdx];
+      this.heap[childIdx] = this.heap[parentIdx];
+      this.heap[parentIdx] = temp;
+      if (parentIdx == 0) {
+        break;
+      }
+      childIdx = parentIdx;
+      parentIdx = Number.parseInt((childIdx - 1) / 2);
+    }
+  };
+  this.pop = function() {
+    const oldHead = this.heap[0];
+    this.heap[0] = this.heap[this.heap.length - 1];
+    let parentIdx = 0;
+    let childIdx = 1;
+    if (this.heap[0] < this.heap[1] || this.heap[0] < this.heap[2]) {
+      while (this.heap[parentIdx] < this.heap[childIdx]) {
+        if (this.heap[0] < this.heap[1]) {
+          childIdx = 1;
+        } else {
+          childIdx = 2;
+        }
+        
+      }
+    }
+    return oldHead
+  }
+  this.toArray = function() {
+    return this.heap;
+  }
+}
 
 
 // Counting Sort
 
 
 // ** Tests **
-// arrAssert(expect, mergeSort(unsortedArray), `mergeSort, ${unsortedArray.length} elements unsorted`);
-// arrAssert(expect, insertionSort(unsortedArray), `insertionSort, ${unsortedArray.length} elements unsorted`);
-// arrAssert(expect, bubbleSort(unsortedArray), `bubbleSort, ${unsortedArray.length} elements unsorted`);
+function runTests() {
+  arrAssert(expect, mergeSort(unsortedArray), `mergeSort, ${unsortedArray.length} elements unsorted`);
+  arrAssert(expect, insertionSort(unsortedArray), `insertionSort, ${unsortedArray.length} elements unsorted`);
+  arrAssert(expect, bubbleSort(unsortedArray), `bubbleSort, ${unsortedArray.length} elements unsorted`);
+}
+
+// runTests();
 
 // Assert
 function arrayEquals(arr1, arr2) {
@@ -188,8 +243,7 @@ function arrAssert(expect, result, test = '') {
   }
 }
 
-// Performance Tests
-
+// ** Performance Tests **
 function timerDecorator(fn) {
   return function(arg) {
     let startTime = Date.now();
@@ -199,14 +253,19 @@ function timerDecorator(fn) {
   };
 }
 
-const arraySize = 2e4;
-console.log(`Making ${arraySize.toLocaleString()} element array of random ints`);
-let largeArray = [];
-for (let i = 0; i < arraySize; i++) {
-  largeArray.push(Math.floor(Math.random() * arraySize));
+
+function runPerformanceTests() {
+  const arraySize = 2e4;
+  console.log(`Making ${arraySize.toLocaleString()} element array of random ints`);
+  let largeArray = [];
+  for (let i = 0; i < arraySize; i++) {
+    largeArray.push(Math.floor(Math.random() * arraySize));
+  }
+
+  console.log(`- mergeSort\t\t${timerDecorator(mergeSort)(largeArray)}`);
+  console.log(`- insertionSort\t\t${timerDecorator(insertionSort)(largeArray)}`);
+  console.log(`- insertionSortLL\t${timerDecorator(insertionSortLL)(largeArray)}`);
+  console.log(`- bubbleSort\t\t${timerDecorator(bubbleSort)(largeArray)}`);
 }
 
-console.log(`- mergeSort\t\t${timerDecorator(mergeSort)(largeArray)}`);
-console.log(`- insertionSort\t\t${timerDecorator(insertionSort)(largeArray)}`);
-console.log(`- insertionSortLL\t${timerDecorator(insertionSortLL)(largeArray)}`);
-console.log(`- bubbleSort\t\t${timerDecorator(bubbleSort)(largeArray)}`);
+// runPerformanceTests();
