@@ -149,8 +149,12 @@ function bubbleSort(arr) {
   return arr;
 }
 
-// ** Quicksort **
+// ** Quicksort (Tony Hoare 1959) **
+// Not stable if efficient, can be done in-place
+// time complexity O(n log n) for n elements
+function quickSort(arr) {
 
+}
 
 // ** Heapsort **
 function heapSort(arr) {
@@ -252,7 +256,7 @@ function timerDecorator(fn) {
 }
 
 function runPerformanceTests() {
-  const arraySize = 3e4;
+  const arraySize = 2e4;
   console.log(`Making ${arraySize.toLocaleString()} element array of random ints`);
   let largeArray = [];
   for (let i = 0; i < arraySize; i++) {
@@ -260,7 +264,7 @@ function runPerformanceTests() {
   }
 
   console.log(`- mergeSort\t\t${timerDecorator(mergeSort)(largeArray)}`);
-  // console.log(`- insertionSort\t\t${timerDecorator(insertionSort)(largeArray)}`);
+  console.log(`- insertionSort\t\t${timerDecorator(insertionSort)(largeArray)}`);
   console.log(`- insertionSortLL\t${timerDecorator(insertionSortLL)(largeArray)}`);
   console.log(`- bubbleSort\t\t${timerDecorator(bubbleSort)(largeArray)}`);
   console.log(`- heapSort\t\t${timerDecorator(heapSort)(largeArray)}`);
